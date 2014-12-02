@@ -1,0 +1,43 @@
+﻿<tw319qrc>
+    <url_base>
+    http://www.319.com.tw
+    </url_base>
+    <path_county>
+    /county/show/
+    </path_county>
+    <path_village>
+    /village/show/
+    </path_village>
+    <path_store_code>
+    /store/gotcode/
+    </path_store_code>
+    <path_store_detail>
+    /store/show/
+    </path_store_detail>
+    <counties>
+        <!-- url_base and path_county should be prior to the tag 'counties' -->
+        <county id='1'  name='新北市' />
+        <county id='2'  name='桃園縣' />
+        <county id='3'  name='新竹縣' />
+        <county id='4'  name='苗栗縣' />
+        <county id='5'  name='南投縣' />
+        <county id='7'  name='彰化縣' />
+        <county id='8'  name='雲林縣' />
+        <county id='9'  name='嘉義縣' />
+        <county id='12' name='屏東縣' />
+        <county id='13' name='宜蘭縣' />
+        <county id='14' name='花蓮縣' />
+        <county id='15' name='台東縣' />
+        <county id='16' name='澎湖縣' />
+        <county id='17' name='金門縣' />
+        <county id='18' name='連江縣' />
+        <county id='19' name='台北市' />
+        <county id='20' name='基隆市' />
+        <county id='21' name='新竹市' />
+        <county id='22' name='台中市' />
+        <county id='23' name='嘉義市' />
+        <county id='24' name='台南市' />
+        <county id='25' name='高雄市' />
+    </counties>
+</tw319qrc>
+

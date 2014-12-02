@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:android1="http://schemas.android.com/apk/res/android"
+    android1:id="@+id/layoutLocation"
+    android1:layout_width="match_parent"
+    android1:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/textViewLocation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android1:background="@drawable/icon_grid_item_location_background"
+        android1:gravity="center_vertical|center_horizontal"
+        android1:text="@string/app_name"
+        android1:textSize="30sp"
+        android1:textStyle="bold" >
+    </TextView>
+
+    <ImageView
+        android1:id="@+id/imageViewLocationGreen"
+        android1:layout_width="wrap_content"
+        android1:layout_height="wrap_content"
+        android1:layout_gravity="bottom|right"
+        android1:layout_marginBottom="5dp"
+        android1:layout_marginRight="5dp"
+        android1:contentDescription="@string/text_default_content_description"
+        android1:src="@drawable/icon_location_green" />
+
+</FrameLayout>
