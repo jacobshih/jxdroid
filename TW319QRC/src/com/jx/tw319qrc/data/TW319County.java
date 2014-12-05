@@ -1,11 +1,14 @@
 package com.jx.tw319qrc.data;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import com.jx.tw319qrc.K;
 
 public class TW319County extends TW319Location {
 
@@ -42,19 +45,25 @@ public class TW319County extends TW319Location {
 	private void getVillageOnLine() {
 		String countyUrl = getUrlPrefixOfCounty() + getId();
 		try {
-			String html = new TW319HttpTask().execute(countyUrl).get();
-			Document doc = Jsoup.parse(html);
-			Elements elems = doc.select("table[class=city-box bgLG] tr td a");
-			clearLocationItems();
-			for (Element e : elems) {
-				String href = e.attr("href");
-				String name = e.text();
-				int idIndex = href.lastIndexOf("/");
-				String id = href.substring(idIndex + 1);
-				String url = TW319Location.getUrlBase() + href;
-				addLocationItem(id, name, url);
+			String html = new TW319HttpTask().execute(countyUrl).get(
+					K.timeoutHttpRequest, TimeUnit.MILLISECONDS);
+			if (html.length() > 0) {
+				Document doc = Jsoup.parse(html);
+				Elements elems = doc
+						.select("table[class=city-box bgLG] tr td a");
+				if (elems.size() > 0) {
+					clearLocationItems();
+					for (Element e : elems) {
+						String href = e.attr("href");
+						String name = e.text();
+						int idIndex = href.lastIndexOf("/");
+						String id = href.substring(idIndex + 1);
+						String url = TW319Location.getUrlBase() + href;
+						addLocationItem(id, name, url);
+					}
+					saveVillages();
+				}
 			}
-			saveVillages();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -62,7 +71,8 @@ public class TW319County extends TW319Location {
 
 	@Override
 	public boolean isItemDataCached(String id) {
-		String filename = getPathTW319QRC() + PATH_VILLAGES + id + FILE_EXTENSION;
+		String filename = getPathTW319QRC() + PATH_VILLAGES + id
+				+ FILE_EXTENSION;
 		File file = new File(filename);
 		boolean fileExists = file.isFile();
 		return fileExists;

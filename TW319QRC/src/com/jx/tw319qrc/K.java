@@ -20,4 +20,7 @@ public class K {
 	public final static String jsonAddress = "address";
 	public final static String jsonItems = "items";
 
+	public final static int timeoutTcpConnection = 3000;
+	public final static int timeoutSocket = 8000;
+	public final static int timeoutHttpRequest = 8000;
 }
