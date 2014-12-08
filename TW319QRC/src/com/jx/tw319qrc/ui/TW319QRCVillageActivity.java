@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -47,6 +49,33 @@ public class TW319QRCVillageActivity extends Activity {
 		setContentView(R.layout.activity_village);
 		initialize();
 		loadListViewStores();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.menu_tw319qrc, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		switch (id) {
+		case R.id.itemAbout:
+			return true;
+		case R.id.itemClearData:
+			village.deleteFile();
+			break;
+		case R.id.itemReload:
+			village.reload();
+			loadListViewStores();
+			break;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	private void initialize() {

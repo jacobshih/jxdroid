@@ -104,8 +104,8 @@ public class TW319Village extends TW319Location implements Serializable {
 					saveStores();
 				}
 			}
-		} catch (Exception e1) {
-			e1.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -119,5 +119,15 @@ public class TW319Village extends TW319Location implements Serializable {
 		} else {
 			getStoresOnLine();
 		}
+	}
+
+	public void deleteFile() {
+		File file = new File(getFileName());
+		file.delete();
+	}
+
+	public void reload() {
+		deleteFile();
+		getStores(getId());
 	}
 }

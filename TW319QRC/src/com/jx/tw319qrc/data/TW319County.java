@@ -89,4 +89,14 @@ public class TW319County extends TW319Location {
 			getVillageOnLine();
 		}
 	}
+
+	public void deleteFile() {
+		File file = new File(getFileName());
+		file.delete();
+	}
+
+	public void reload() {
+		deleteFile();
+		getVillages(getId());
+	}
 }

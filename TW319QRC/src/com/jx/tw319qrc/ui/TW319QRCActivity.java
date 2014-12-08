@@ -68,8 +68,18 @@ public class TW319QRCActivity extends Activity {
 		case R.id.itemAbout:
 			return true;
 		case R.id.itemClearData:
-			removeDirectory(getFilesDir());
-			showLocation();
+			if(level == 1) {
+				county.deleteFile();
+			} else {
+				removeDirectory(getFilesDir());
+				showLocation();
+			}
+			break;
+		case R.id.itemReload:
+			if(level == 1) {
+				county.reload();
+				showLocation();
+			}
 			break;
 		}
 		return super.onOptionsItemSelected(item);
