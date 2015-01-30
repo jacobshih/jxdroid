@@ -26,7 +26,7 @@ public class TW319Village extends TW319Location implements Serializable {
 	}
 
 	private void validatePathVillages() {
-		File pathVillages = new File(getPathTW319QRC() + PATH_VILLAGES);
+		File pathVillages = new File(getPathVillages());
 		if (!pathVillages.isDirectory()) {
 			pathVillages.mkdirs();
 		}
@@ -34,7 +34,7 @@ public class TW319Village extends TW319Location implements Serializable {
 
 	protected String getFileName() {
 		validatePathVillages();
-		return getPathTW319QRC() + PATH_VILLAGES + getId() + FILE_EXTENSION;
+		return getPathVillages() + getId() + FILE_EXTENSION;
 	}
 
 	private void saveStores() {

@@ -29,8 +29,9 @@ public class TW319Location implements Serializable {
 	private static String urlPrefixOfStoreCode = null;
 	private static String urlPrefixOfStoreDetail = null;
 	private static String pathTW319QRC = null;
-	protected final static String PATH_COUNTIES = "/counties/";
-	protected final static String PATH_VILLAGES = "/villages/";
+	protected final static String PATH_DATA = "data/";
+	protected final static String PATH_COUNTIES = "counties/";
+	protected final static String PATH_VILLAGES = "villages/";
 	protected final static String FILE_EXTENSION = ".json";
 
 	private String id = null;
@@ -86,7 +87,18 @@ public class TW319Location implements Serializable {
 	}
 
 	public static void setPathTW319QRC(String path) {
+		if(!path.substring(path.length()-1).equals("/")) {
+			path += "/";
+		}
 		pathTW319QRC = path;
+	}
+
+	public static String getPathCounties() {
+		return getPathTW319QRC() + PATH_DATA + PATH_COUNTIES;
+	}
+
+	public static String getPathVillages() {
+		return getPathTW319QRC() + PATH_DATA + PATH_VILLAGES;
 	}
 
 	public String getId() {
@@ -166,7 +178,7 @@ public class TW319Location implements Serializable {
 	}
 
 	public boolean isItemDataCached(String id) {
-		String filename = getPathTW319QRC() + PATH_COUNTIES + id + FILE_EXTENSION;
+		String filename = getPathCounties() + id + FILE_EXTENSION;
 		File file = new File(filename);
 		boolean fileExists = file.isFile();
 		return fileExists;

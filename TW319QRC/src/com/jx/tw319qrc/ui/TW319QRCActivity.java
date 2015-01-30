@@ -3,7 +3,6 @@ package com.jx.tw319qrc.ui;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -71,7 +70,7 @@ public class TW319QRCActivity extends Activity {
 			if(level == 1) {
 				county.deleteFile();
 			} else {
-				removeDirectory(getFilesDir());
+				removeDirectory(getExternalFilesDir(null));
 				showLocation();
 			}
 			break;
@@ -113,7 +112,7 @@ public class TW319QRCActivity extends Activity {
 		progressBarLoading = (ProgressBar) findViewById(R.id.progressBarLoading);
 		gridViewLocation = (GridView) findViewById(R.id.gridViewLocation);
 
-		TW319Location.setPathTW319QRC(getFilesDir().toString());
+		TW319Location.setPathTW319QRC(getExternalFilesDir(null).toString());
 		twAll = new TW319Location();
 		county = new TW319County();
 		village = new TW319Village();

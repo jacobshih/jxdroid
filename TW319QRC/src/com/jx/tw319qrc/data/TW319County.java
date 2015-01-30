@@ -22,7 +22,7 @@ public class TW319County extends TW319Location {
 	}
 
 	private void validatePathCounties() {
-		File pathCounties = new File(getPathTW319QRC() + PATH_COUNTIES);
+		File pathCounties = new File(getPathCounties());
 		if (!pathCounties.isDirectory()) {
 			pathCounties.mkdirs();
 		}
@@ -30,7 +30,7 @@ public class TW319County extends TW319Location {
 
 	protected String getFileName() {
 		validatePathCounties();
-		return getPathTW319QRC() + PATH_COUNTIES + getId() + FILE_EXTENSION;
+		return getPathCounties() + getId() + FILE_EXTENSION;
 	}
 
 	private void saveVillages() {
@@ -71,8 +71,7 @@ public class TW319County extends TW319Location {
 
 	@Override
 	public boolean isItemDataCached(String id) {
-		String filename = getPathTW319QRC() + PATH_VILLAGES + id
-				+ FILE_EXTENSION;
+		String filename = getPathVillages() + id + FILE_EXTENSION;
 		File file = new File(filename);
 		boolean fileExists = file.isFile();
 		return fileExists;
