@@ -17,7 +17,7 @@
     <counties>
         <!-- url_base and path_county should be prior to the tag 'counties' -->
         <county id='1'  name='新北市' />
-        <county id='2'  name='桃園縣' />
+        <county id='2'  name='桃園市' />
         <county id='3'  name='新竹縣' />
         <county id='4'  name='苗栗縣' />
         <county id='5'  name='南投縣' />
