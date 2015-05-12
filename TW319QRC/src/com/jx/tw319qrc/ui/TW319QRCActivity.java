@@ -3,6 +3,8 @@ package com.jx.tw319qrc.ui;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -11,7 +13,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +23,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.jx.tw319qrc.K;
 import com.jx.tw319qrc.R;
@@ -26,6 +31,8 @@ import com.jx.tw319qrc.data.TW319County;
 import com.jx.tw319qrc.data.TW319Location;
 import com.jx.tw319qrc.data.TW319LocationItem;
 import com.jx.tw319qrc.data.TW319Village;
+import com.jx.tw319qrc.tools.FileUtils;
+import com.jx.tw319qrc.tools.ZipUtils;
 
 public class TW319QRCActivity extends Activity {
 
@@ -37,6 +44,12 @@ public class TW319QRCActivity extends Activity {
 	public TW319County county = null;
 	public TW319Village village = null;
 	public int level = 0;
+
+	// +++ data import/export
+	private static final int DATA_FILE_SELECT_CODE = 0;
+	private static final String DATA_FILE_PATH = "Download";
+	private static final String DATA_FILE_NAME = "tw319qrc.zip";
+	// --- data import/export
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +93,12 @@ public class TW319QRCActivity extends Activity {
 				showLocation();
 			}
 			break;
+		case R.id.itemDataImport:
+			showFileChooser();
+			break;
+		case R.id.itemDataExport:
+			exportData();
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -106,6 +125,64 @@ public class TW319QRCActivity extends Activity {
 		}
 		super.onResume();
 	}
+
+// +++ data import/export
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+		case DATA_FILE_SELECT_CODE:
+			if (resultCode == RESULT_OK) {
+				Uri uri = data.getData();
+				String path = null;
+				try {
+					path = FileUtils.getPath(mContext, uri);
+					importData(path);
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
+			}
+			break;
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+
+	private void showFileChooser() {
+		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+		intent.setType("application/zip");
+		intent.addCategory(Intent.CATEGORY_OPENABLE);
+		try {
+			startActivityForResult(Intent.createChooser(intent,
+					"Select the tw319qrc data file"), DATA_FILE_SELECT_CODE);
+		} catch (android.content.ActivityNotFoundException e) {
+			Toast.makeText(this, "Please install a File Manager",
+					Toast.LENGTH_LONG).show();
+		}
+	}
+
+	private void importData(String path) {
+		try {
+			ZipUtils.unzip(path, getExternalFilesDir(null).toString());
+			showLocation();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void exportData() {
+		File pathDownlaod = Environment
+				.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+		String zipFile = pathDownlaod.toString() + "/" + "x" + DATA_FILE_NAME;
+		try {
+			ZipUtils.zip(getExternalFilesDir(null).toString(), zipFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Toast.makeText(this,
+				"The data is exported and saved in folder " + DATA_FILE_PATH,
+				Toast.LENGTH_LONG).show();
+	}
+
+	// --- data import/export
 
 	private void initialize() {
 		mContext = this;

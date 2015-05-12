@@ -7,5 +7,8 @@
     <string name="menu_item_clear_data">Clear Data</string>
     <string name="menu_item_about">About</string>
     <string name="text_default_content_description" />
+    <string name="menu_item_data">Data</string>
+    <string name="menu_item_data_import">Import</string>
+    <string name="menu_item_data_export">Export</string>
 
 </resources>
