@@ -59,6 +59,14 @@ public class TW319QRCVillageActivity extends Activity {
 	}
 
 	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		boolean ret = super.onPrepareOptionsMenu(menu);
+		menu.findItem(R.id.itemClearData).setVisible(false);
+		menu.findItem(R.id.itemData).setVisible(false);
+		return ret;
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
@@ -67,9 +75,6 @@ public class TW319QRCVillageActivity extends Activity {
 		switch (id) {
 		case R.id.itemAbout:
 			return true;
-		case R.id.itemClearData:
-			village.deleteFile();
-			break;
 		case R.id.itemReload:
 			village.reload();
 			loadListViewStores();

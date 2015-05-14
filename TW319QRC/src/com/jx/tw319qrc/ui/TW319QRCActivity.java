@@ -4,13 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.net.Uri;
@@ -21,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -80,12 +82,7 @@ public class TW319QRCActivity extends Activity {
 		case R.id.itemAbout:
 			return true;
 		case R.id.itemClearData:
-			if(level == 1) {
-				county.deleteFile();
-			} else {
-				removeDirectory(getExternalFilesDir(null));
-				showLocation();
-			}
+			confirmClearData();
 			break;
 		case R.id.itemReload:
 			if(level == 1) {
@@ -313,5 +310,46 @@ public class TW319QRCActivity extends Activity {
 			startVillageActivity();
 			break;
 		}
+	}
+
+	private void confirmClearData() {
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+		alertDialogBuilder.setTitle(R.string.text_clear_data);
+		alertDialogBuilder.setMessage(R.string.text_clear_all_data);
+		alertDialogBuilder.setPositiveButton(android.R.string.ok,
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int i) {
+						clearData();
+					}
+				});
+		alertDialogBuilder.setNegativeButton(android.R.string.cancel,
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int i) {
+					}
+				});
+		final AlertDialog alertDialog = alertDialogBuilder.create();
+		alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+			@Override
+			public void onShow(DialogInterface dialog) {
+				Button n = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+				n.setFocusable(true);
+				n.setFocusableInTouchMode(true);
+				n.requestFocus();
+			}
+		});
+		alertDialog.show();
+	}
+
+	private void clearData() {
+		if (level == 1) {
+			for (TW319LocationItem item : county.getLocationItems()) {
+				village.setId(item.getId());
+				village.deleteFile();
+			}
+			county.deleteFile();
+		} else {
+			removeDirectory(getExternalFilesDir(null));
+		}
+		showLocation();
 	}
 }
