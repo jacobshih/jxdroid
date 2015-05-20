@@ -33,7 +33,7 @@ import com.jx.tw319qrc.data.TW319County;
 import com.jx.tw319qrc.data.TW319Location;
 import com.jx.tw319qrc.data.TW319LocationItem;
 import com.jx.tw319qrc.data.TW319Village;
-import com.jx.tw319qrc.tools.FileUtils;
+import com.jx.tw319qrc.tools.FilePath;
 import com.jx.tw319qrc.tools.ZipUtils;
 
 public class TW319QRCActivity extends Activity {
@@ -132,7 +132,7 @@ public class TW319QRCActivity extends Activity {
 				Uri uri = data.getData();
 				String path = null;
 				try {
-					path = FileUtils.getPath(mContext, uri);
+					path = FilePath.getPath(mContext, uri);
 					importData(path);
 				} catch (URISyntaxException e) {
 					e.printStackTrace();
