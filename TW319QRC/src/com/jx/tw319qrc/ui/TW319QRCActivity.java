@@ -17,6 +17,8 @@ import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,7 +26,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.jx.tw319qrc.K;
@@ -40,7 +41,7 @@ public class TW319QRCActivity extends Activity {
 
 	private final String XML_FILE = "data/tw319qrc.xml";
 	private Context mContext = null;
-	private ProgressBar progressBarLoading = null;
+	private SwipeRefreshLayout swipeRefreshLayout =null;
 	private GridView gridViewLocation = null;
 	public TW319Location twAll = null;
 	public TW319County county = null;
@@ -58,11 +59,9 @@ public class TW319QRCActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_tw319qrc);
 		initialize();
-		progressBarLoading.setVisibility(View.VISIBLE);
 		initTW319Location();
 		loadGridViewForTwAll();
 		gridViewLocation.setVisibility(View.VISIBLE);
-		progressBarLoading.setVisibility(View.GONE);
 	}
 
 	@Override
@@ -83,12 +82,6 @@ public class TW319QRCActivity extends Activity {
 			return true;
 		case R.id.itemClearData:
 			confirmClearData();
-			break;
-		case R.id.itemReload:
-			if(level == 1) {
-				county.reload();
-				showLocation();
-			}
 			break;
 		case R.id.itemDataImport:
 			showFileChooser();
@@ -183,13 +176,28 @@ public class TW319QRCActivity extends Activity {
 
 	private void initialize() {
 		mContext = this;
-		progressBarLoading = (ProgressBar) findViewById(R.id.progressBarLoading);
 		gridViewLocation = (GridView) findViewById(R.id.gridViewLocation);
 
 		TW319Location.setPathTW319QRC(getExternalFilesDir(null).toString());
 		twAll = new TW319Location();
 		county = new TW319County();
 		village = new TW319Village();
+		swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.layoutTW319QRC);
+		swipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				if (level == 1) {
+					county.reload();
+					showLocation();
+				}
+				swipeRefreshLayout.setRefreshing(false);
+			}
+		});
+		swipeRefreshLayout.setColorSchemeResources(
+				android.R.color.holo_red_light,
+				android.R.color.holo_blue_light,
+				android.R.color.holo_green_light,
+				android.R.color.holo_orange_light);
 	}
 
 	private void initTW319Location() {

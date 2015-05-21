@@ -8,6 +8,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -33,6 +35,7 @@ import com.jx.tw319qrc.data.TW319Village;
 public class TW319QRCVillageActivity extends Activity {
 
 	private Context mContext = null;
+	private SwipeRefreshLayout swipeRefreshLayout =null;
 	private ListView listViewStores = null;
 	private LinearLayout layoutStoreDetail = null;
 	private LinearLayout layoutStoreDescription = null;
@@ -75,10 +78,6 @@ public class TW319QRCVillageActivity extends Activity {
 		switch (id) {
 		case R.id.itemAbout:
 			return true;
-		case R.id.itemReload:
-			village.reload();
-			loadListViewStores();
-			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -86,6 +85,7 @@ public class TW319QRCVillageActivity extends Activity {
 	private void initialize() {
 		LayoutInflater inflater = getLayoutInflater();
 		mContext = this;
+
 		listViewStores = (ListView) findViewById(R.id.listViewStores);
 
 		layoutStoreDetail = (LinearLayout) findViewById(R.id.layoutStoreDetail);
@@ -115,6 +115,22 @@ public class TW319QRCVillageActivity extends Activity {
 
 		village = (TW319Village) getIntent().getSerializableExtra(
 				TW319Village.class.getName());
+
+		swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.layoutTW319QRC);
+		swipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				Log.i("jacob_shih", "TW319QRCVillageActivity.initialize().new OnRefreshListener() {...}.onRefresh()");
+				village.reload();
+				loadListViewStores();
+				swipeRefreshLayout.setRefreshing(false);
+			}
+		});
+		swipeRefreshLayout.setColorSchemeResources(
+				android.R.color.holo_red_light,
+				android.R.color.holo_blue_light,
+				android.R.color.holo_green_light,
+				android.R.color.holo_orange_light);
 
 	}
 

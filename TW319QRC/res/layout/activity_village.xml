@@ -13,10 +13,17 @@
         android:visibility="visible" >
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/listViewStores"
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/layoutTW319QRC"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-    </ListView>
-
+        android:layout_height="match_parent"
+        tools:context="com.jx.tw319qrc.ui.TW319QRCVillageActivity" >
+        <ListView
+            android:id="@+id/listViewStores"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+        </ListView>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>
