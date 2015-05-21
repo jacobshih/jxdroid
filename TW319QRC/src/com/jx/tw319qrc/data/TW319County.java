@@ -28,6 +28,11 @@ public class TW319County extends TW319Location {
 		}
 	}
 
+	protected boolean isFileExist() {
+		File theFile = new File(getFileName());
+		return theFile.isFile();
+	}
+
 	protected String getFileName() {
 		validatePathCounties();
 		return getPathCounties() + getId() + FILE_EXTENSION;
@@ -42,7 +47,8 @@ public class TW319County extends TW319Location {
 		fromJsonString(jsonString);
 	}
 
-	private void getVillageOnLine() {
+	private boolean getVillageOnLine() {
+		boolean ret = false;
 		String countyUrl = getUrlPrefixOfCounty() + getId();
 		try {
 			String html = new TW319HttpTask().execute(countyUrl).get(
@@ -62,11 +68,13 @@ public class TW319County extends TW319Location {
 						addLocationItem(id, name, url);
 					}
 					saveVillages();
+					ret = true;
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return ret;
 	}
 
 	@Override
@@ -79,10 +87,8 @@ public class TW319County extends TW319Location {
 
 	public void getVillages(String countyId) {
 		setId(countyId);
-		File fileCounty = new File(getFileName());
-		boolean fileCountyExists = fileCounty.isFile();
 		clearLocationItems();
-		if (fileCountyExists) {
+		if (isFileExist()) {
 			getVillagesFromFile();
 		} else {
 			getVillageOnLine();
@@ -95,7 +101,10 @@ public class TW319County extends TW319Location {
 	}
 
 	public void reload() {
-		deleteFile();
-		getVillages(getId());
+		String countyId = getId();
+		clearLocationItems();
+		if (!getVillageOnLine()) {
+			getVillages(countyId);
+		}
 	}
 }

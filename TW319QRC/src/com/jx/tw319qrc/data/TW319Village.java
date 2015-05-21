@@ -32,6 +32,11 @@ public class TW319Village extends TW319Location implements Serializable {
 		}
 	}
 
+	protected boolean isFileExist() {
+		File theFile = new File(getFileName());
+		return theFile.isFile();
+	}
+
 	protected String getFileName() {
 		validatePathVillages();
 		return getPathVillages() + getId() + FILE_EXTENSION;
@@ -60,7 +65,8 @@ public class TW319Village extends TW319Location implements Serializable {
 		fromJsonString(jsonString);
 	}
 
-	private void getStoresOnLine() {
+	private boolean getStoresOnLine() {
+		boolean ret = false;
 		String villageUrl = getUrlPrefixOfVillage() + getId();
 		String html;
 		try {
@@ -102,19 +108,19 @@ public class TW319Village extends TW319Location implements Serializable {
 						addLocationItem(item);
 					}
 					saveStores();
+					ret = true;
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return ret;
 	}
 
 	public void getStores(String villageId) {
 		setId(villageId);
-		File fileVillage = new File(getFileName());
-		boolean fileVillageExists = fileVillage.isFile();
 		clearLocationItems();
-		if (fileVillageExists) {
+		if (isFileExist()) {
 			getStoresFromFile();
 		} else {
 			getStoresOnLine();
@@ -127,7 +133,10 @@ public class TW319Village extends TW319Location implements Serializable {
 	}
 
 	public void reload() {
-		deleteFile();
-		getStores(getId());
+		String villageId = getId();
+		clearLocationItems();
+		if (!getStoresOnLine()) {
+			getStores(villageId);
+		}
 	}
 }
