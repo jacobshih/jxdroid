@@ -10,6 +10,17 @@ public class K {
 	public final static String tagPathStoreDetail = "path_store_detail";
 	public final static String tagAttrId = "id";
 	public final static String tagAttrName = "name";
+	public final static String tagCwApp = "cwApp";
+	public final static String tagPathCheckinByTime = "path_checkin_bytime";
+	public final static String tagPathCheckinByCategory = "path_checkin_bycategory";
+	public final static String tagPathCheckinByCounty = "path_checkin_bycounty";
+
+	public final static String jsonUserEmail = "email";
+	public final static String jsonUserToken = "token";
+	public final static String jsonStoresVisitedByDistrict = "stores_visited_by_district";
+	public final static String jsonStores = "stores";
+	public final static String jsonStoreId = "store_id";
+	public final static String jsonTimeCollected = "time_collected";
 
 	public final static String jsonId = "id";
 	public final static String jsonName = "name";

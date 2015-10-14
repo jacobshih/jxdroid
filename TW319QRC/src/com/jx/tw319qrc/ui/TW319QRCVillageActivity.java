@@ -29,6 +29,7 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.jx.tw319qrc.R;
+import com.jx.tw319qrc.data.TW319Location;
 import com.jx.tw319qrc.data.TW319StoreItem;
 import com.jx.tw319qrc.data.TW319Village;
 
@@ -78,6 +79,10 @@ public class TW319QRCVillageActivity extends Activity {
 		switch (id) {
 		case R.id.itemAbout:
 			return true;
+		case R.id.itemUserUpdateVisitedStores:
+			TW319Location.updateVisitedStores();
+			TW319Location.loadVisitedStoresFromFile();
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}

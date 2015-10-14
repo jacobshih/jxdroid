@@ -41,4 +41,13 @@
         android:text="@string/app_name"
         android:textSize="28sp" />
 
+    <ImageView
+        android:id="@+id/imageViewStoreVisited"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/imageViewIcon"
+        android:layout_alignRight="@id/imageViewIcon"
+        android:contentDescription="@string/text_default_content_description"
+        android:src="@drawable/icon_store_visited" />
+
 </RelativeLayout>

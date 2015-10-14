@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jx.tw319qrc.R;
+import com.jx.tw319qrc.data.TW319Location;
 import com.jx.tw319qrc.data.TW319LocationItem;
 import com.jx.tw319qrc.data.TW319StoreItem;
 
@@ -54,7 +55,7 @@ public class ListViewVillageAdapter extends BaseAdapter {
 			LayoutInflater inflater = (LayoutInflater) mContext
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			view = new View(mContext);
-			view = inflater.inflate(R.layout.view_store, null);
+			view = inflater.inflate(R.layout.view_store, parent, false);
 		} else {
 			view = convertView;
 		}
@@ -69,6 +70,12 @@ public class ListViewVillageAdapter extends BaseAdapter {
 		Bitmap bm = BitmapFactory.decodeResource(mContext.getResources(),
 				item.getIconId());
 		imageViewIcon.setImageBitmap(bm);
+
+		ImageView imageViewStoreVisited = (ImageView) view.findViewById(R.id.imageViewStoreVisited);
+		boolean visited = TW319Location.isStoreVisited(item.getId());
+		int imageVisible = visited ? View.VISIBLE : View.GONE;
+		imageViewStoreVisited.setVisibility(imageVisible);
+
 		if (mOnClickListener != null)
 			view.setOnClickListener(mOnClickListener);
 		return view;

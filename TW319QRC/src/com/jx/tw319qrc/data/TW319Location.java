@@ -11,6 +11,8 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,26 +30,32 @@ public class TW319Location implements Serializable {
 	private static String urlPrefixOfVillage = null;
 	private static String urlPrefixOfStoreCode = null;
 	private static String urlPrefixOfStoreDetail = null;
+	private static String urlCheckinByCounty = null;
 	private static String pathTW319QRC = null;
 	protected final static String PATH_DATA = "data/";
+	protected final static String PATH_USER = "user/";
 	protected final static String PATH_COUNTIES = "counties/";
 	protected final static String PATH_VILLAGES = "villages/";
+	protected final static String FILE_TOKEN = "token.json";
+	protected final static String FILE_CHECKIN = "checkin.json";
 	protected final static String FILE_EXTENSION = ".json";
 
 	private String id = null;
 	private ArrayList<TW319LocationItem> items = null;
+	private static HashSet<String> visitedStores = null;
 
 	public TW319Location() {
 		super();
 		items = new ArrayList<TW319LocationItem>();
+		visitedStores = new HashSet<String>();
 	}
 
 	public static String getUrlBase() {
 		return urlBase;
 	}
 
-	public static void setUrlBase(String urlBase) {
-		TW319Location.urlBase = urlBase;
+	public static void setUrlBase(String url) {
+		urlBase = url;
 	}
 
 	public static String getUrlPrefixOfCounty() {
@@ -82,6 +90,14 @@ public class TW319Location implements Serializable {
 		urlPrefixOfStoreCode = urlBase + urlPath;
 	}
 
+	public static String getUrlCheckinByCounty() {
+		return urlCheckinByCounty;
+	}
+
+	public static void setUrlCheckinByCounty(String urlPath) {
+		urlCheckinByCounty = urlBase + urlPath;
+	}
+
 	public static String getPathTW319QRC() {
 		return pathTW319QRC;
 	}
@@ -91,6 +107,14 @@ public class TW319Location implements Serializable {
 			path += "/";
 		}
 		pathTW319QRC = path;
+	}
+
+	public static String getPathToken() {
+		return getPathTW319QRC() + PATH_USER + FILE_TOKEN;
+	}
+
+	public static String getPathCheckin() {
+		return getPathTW319QRC() + PATH_USER + FILE_CHECKIN;
 	}
 
 	public static String getPathCounties() {
@@ -141,7 +165,7 @@ public class TW319Location implements Serializable {
 		return null;
 	}
 
-	public String loadFromFile(String fileName) {
+	public static String loadFromFile(String fileName) {
 		String jsonString = "";
 		FileInputStream is = null;
 		try {
@@ -182,6 +206,99 @@ public class TW319Location implements Serializable {
 		File file = new File(filename);
 		boolean fileExists = file.isFile();
 		return fileExists;
+	}
+
+	public static boolean isStoreVisited(String id) {
+		return visitedStores.contains(id);
+	}
+
+	public static void loadVisitedStoresFromFile() {
+		/*
+		 * sample content of checkin.json
+         * {
+         *  "status": "1",
+         *  "stores_visited_by_district": [
+         *    {
+         *      "stores_visited": 2,
+         *      "name": "county_name",
+         *      "county_id": 1,
+         *      "stores": [
+         *        {
+         *          "time_collected": "2015/01/01 12:34",
+         *          "name": "store_name",
+         *          "store_id": 1111
+         *        },
+         *        {
+         *          "time_collected": "2015/10/14 23:45",
+         *          "name": "store_name",
+         *          "store_id": 2222
+         *        }
+         *      ]
+         *    }
+         *  ],
+         *  "status_msg": ""
+         * }
+		 */
+		String jsCheckin = loadFromFile(getPathCheckin());
+		try {
+			JSONObject joCheckin = new JSONObject(jsCheckin);
+			JSONArray joStoresVisitedByDistrict = joCheckin.optJSONArray(K.jsonStoresVisitedByDistrict);
+			for (int i = 0; i < joStoresVisitedByDistrict.length(); i++) {
+				JSONObject joDistrict = joStoresVisitedByDistrict.getJSONObject(i);
+				JSONArray joStores = joDistrict.optJSONArray(K.jsonStores);
+				for (int j = 0; j < joStores.length(); j++) {
+					JSONObject joStore = joStores.getJSONObject(j);
+					String store_id = joStore.optString(K.jsonStoreId);
+					visitedStores.add(store_id);
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void updateVisitedStores() {
+        /*
+         * the visited stores list is retrieved from one of the following url:
+         *   http://www.319.com.tw/cwApp/checkin/list/bytime?token=yourtoken
+         *   http://www.319.com.tw/cwApp/checkin/list/bycategory?token=yourtoken
+         *   http://www.319.com.tw/cwApp/checkin/list/bycounty?token=yourtoken
+         */
+		/*
+		 * sample content of token.json
+		 * {
+		 * 	"email": "myname@foo.bar.com",
+		 * 	"token": "0123456789012345678901234567890123456789012345%23ABCD0123CDEF%23aBcD0123eFgH4567iJkL8901mNoP2345"
+		 * } 
+		 */
+		File fileToken = new File(getPathToken());
+		if(fileToken.isFile()) {
+			String token = null;
+			String jsToken = loadFromFile(fileToken.getPath());
+			try {
+				JSONObject joToken = new JSONObject(jsToken);
+				token = joToken.optString(K.jsonUserToken);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			if(token != null) {
+				try {
+					String urlCheckinByCounty = getUrlCheckinByCounty();
+					urlCheckinByCounty = String.format("%s?token=%s", urlCheckinByCounty, token);
+					String jsCheckin = new TW319HttpTask().execute(urlCheckinByCounty).get(
+							K.timeoutHttpRequest, TimeUnit.MILLISECONDS);
+					if (jsCheckin.length() > 0) {
+						OutputStream os = new FileOutputStream(getPathCheckin());
+						if (os != null) {
+							os.write(jsCheckin.getBytes());
+							os.close();
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	public void fromJsonString(String jsonString) {

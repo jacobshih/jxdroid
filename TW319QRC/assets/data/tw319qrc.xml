@@ -39,5 +39,16 @@
         <county id='24' name='台南市' />
         <county id='25' name='高雄市' />
     </counties>
+    <cwApp>
+        <path_checkin_bytime>
+        /cwApp/checkin/list/bytime
+        </path_checkin_bytime>
+        <path_checkin_bycategory>
+        /cwApp/checkin/list/bycategory
+        </path_checkin_bycategory>
+        <path_checkin_bycounty>
+        /cwApp/checkin/list/bycounty
+        </path_checkin_bycounty>
+    </cwApp>
 </tw319qrc>
 

@@ -11,5 +11,7 @@
     <string name="text_default_content_description" />
     <string name="text_clear_data">Clear data</string>
     <string name="text_clear_all_data">Clear all data?</string>
+    <string name="menu_item_user">User</string>
+    <string name="menu_item_user_update_visited_stores">Update visited stores</string>
 
 </resources>

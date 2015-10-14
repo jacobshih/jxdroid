@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <item android:id="@+id/itemData" android:title="@string/menu_item_data">
+    <item android:id="@+id/itemUser" android:title="@string/menu_item_user">
+        <menu>
+            <item android:id="@+id/itemUserUpdateVisitedStores" android:title="@string/menu_item_user_update_visited_stores" />
+        </menu>
+    </item><item android:id="@+id/itemData" android:title="@string/menu_item_data">
         <menu>
             <item android:id="@+id/itemDataImport" android:title="@string/menu_item_data_import"/>
             <item android:id="@+id/itemDataExport" android:title="@string/menu_item_data_export"/>

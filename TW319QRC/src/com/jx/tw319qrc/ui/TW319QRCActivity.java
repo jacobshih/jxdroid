@@ -50,7 +50,6 @@ public class TW319QRCActivity extends Activity {
 
 	// +++ data import/export
 	private static final int DATA_FILE_SELECT_CODE = 0;
-	private static final String DATA_FILE_PATH = "Download";
 	private static final String DATA_FILE_NAME = "tw319qrc.zip";
 	// --- data import/export
 
@@ -62,6 +61,7 @@ public class TW319QRCActivity extends Activity {
 		initTW319Location();
 		loadGridViewForTwAll();
 		gridViewLocation.setVisibility(View.VISIBLE);
+		TW319Location.loadVisitedStoresFromFile();
 	}
 
 	@Override
@@ -69,6 +69,16 @@ public class TW319QRCActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.menu_tw319qrc, menu);
 		return true;
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		boolean ret = super.onPrepareOptionsMenu(menu);
+		File fileToken = new File(TW319Location.getPathToken());
+		if(!fileToken.isFile()) {
+			menu.findItem(R.id.itemUser).setVisible(false);
+		}
+		return ret;
 	}
 
 	@Override
@@ -88,6 +98,10 @@ public class TW319QRCActivity extends Activity {
 			break;
 		case R.id.itemDataExport:
 			exportData();
+			break;
+		case R.id.itemUserUpdateVisitedStores:
+			TW319Location.updateVisitedStores();
+			TW319Location.loadVisitedStoresFromFile();
 			break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -161,14 +175,14 @@ public class TW319QRCActivity extends Activity {
 	private void exportData() {
 		File pathDownlaod = Environment
 				.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-		String zipFile = pathDownlaod.toString() + "/" + "x" + DATA_FILE_NAME;
+		String zipFile = pathDownlaod.toString() + "/" + DATA_FILE_NAME;
 		try {
 			ZipUtils.zip(getExternalFilesDir(null).toString(), zipFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		Toast.makeText(this,
-				"The data is exported and saved in folder " + DATA_FILE_PATH,
+				"The data is exported and saved in folder " + pathDownlaod,
 				Toast.LENGTH_LONG).show();
 	}
 
@@ -237,6 +251,14 @@ public class TW319QRCActivity extends Activity {
 								.getAttributeValue(null, K.tagAttrName);
 						String url = TW319Location.getUrlPrefixOfCounty() + id;
 						twAll.addLocationItem(id, name, url);
+					} else if (tagName.equals(K.tagCwApp)) {
+						// nothing to do ...
+					} else if (tagName.equals(K.tagPathCheckinByTime)) {
+						// not used so far...
+					} else if (tagName.equals(K.tagPathCheckinByCategory)) {
+						// not used so far...
+					} else if (tagName.equals(K.tagPathCheckinByCounty)) {
+						TW319Location.setUrlCheckinByCounty(text);
 					}
 					break;
 				case XmlPullParser.TEXT:
