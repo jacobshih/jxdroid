@@ -158,6 +158,11 @@ public class TW319QRCVillageActivity extends Activity {
 			textViewStoreName.setText(item.getName());
 			textViewStoreAddress.setText(item.getAddress());
 			textViewStoreTelphone.setText(item.getTelephone());
+
+			textViewStoreName.setSelected(true);
+			textViewStoreAddress.setSelected(true);
+			view.setSelected(true);
+
 			genQRCode(item.getUrl());
 		}
 	};
