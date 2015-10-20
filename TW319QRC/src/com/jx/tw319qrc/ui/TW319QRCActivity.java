@@ -89,6 +89,7 @@ public class TW319QRCActivity extends Activity {
 		int id = item.getItemId();
 		switch (id) {
 		case R.id.itemAbout:
+			showAbout();
 			return true;
 		case R.id.itemClearData:
 			confirmClearData();
@@ -381,5 +382,10 @@ public class TW319QRCActivity extends Activity {
 			removeDirectory(getExternalFilesDir(null));
 		}
 		showLocation();
+	}
+
+	private void showAbout() {
+		AboutDialog about = new AboutDialog(mContext);
+		about.show();
 	}
 }

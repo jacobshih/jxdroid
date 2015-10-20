@@ -78,6 +78,7 @@ public class TW319QRCVillageActivity extends Activity {
 		int id = item.getItemId();
 		switch (id) {
 		case R.id.itemAbout:
+			showAbout();
 			return true;
 		case R.id.itemUserUpdateVisitedStores:
 			TW319Location.updateVisitedStores();
@@ -233,5 +234,10 @@ public class TW319QRCVillageActivity extends Activity {
 			}
 		}
 		return null;
+	}
+
+	private void showAbout() {
+		AboutDialog about = new AboutDialog(mContext);
+		about.show();
 	}
 }

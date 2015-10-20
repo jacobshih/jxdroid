@@ -13,5 +13,9 @@
     <string name="text_clear_all_data">Clear all data?</string>
     <string name="menu_item_user">User</string>
     <string name="menu_item_user_update_visited_stores">Update visited stores</string>
+    <string name="text_about_app_description">The application TW319QRC generates the QR code of the stores to be scanned by the app pass319 (http://goo.gl/2sJh7K). \n\nIt just saves your time to find the store to scan the QR code into pass319 when you travel to a village.</string>
+    <string name="text_about_app_github">To view or clone the source code from:\nhttp://github.com/jacobshih/jxdroid</string>
+    <string name="text_about_app_build_date">The application was built at: </string>
+    <string name="text_about_app_version">v0.00.001</string>
 
 </resources>
