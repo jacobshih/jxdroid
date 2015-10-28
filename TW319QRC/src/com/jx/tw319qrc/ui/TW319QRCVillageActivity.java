@@ -2,7 +2,6 @@ package com.jx.tw319qrc.ui;
 
 import java.util.EnumMap;
 import java.util.Map;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -30,7 +29,9 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.jx.tw319qrc.R;
 import com.jx.tw319qrc.data.TW319Location;
+import com.jx.tw319qrc.data.TW319Store;
 import com.jx.tw319qrc.data.TW319StoreItem;
+import com.jx.tw319qrc.data.TW319StoreItem.LatLng;
 import com.jx.tw319qrc.data.TW319Village;
 
 public class TW319QRCVillageActivity extends Activity {
@@ -46,6 +47,7 @@ public class TW319QRCVillageActivity extends Activity {
 	private TextView textViewStoreAddress = null;
 	private TextView textViewStoreTelphone = null;
 	private TW319Village village = null;
+	protected TW319Store store = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +124,8 @@ public class TW319QRCVillageActivity extends Activity {
 		village = (TW319Village) getIntent().getSerializableExtra(
 				TW319Village.class.getName());
 
+		store = new TW319Store();
+
 		swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.layoutTW319QRC);
 		swipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
 			@Override
@@ -164,10 +168,20 @@ public class TW319QRCVillageActivity extends Activity {
 			textViewStoreAddress.setSelected(true);
 			view.setSelected(true);
 
+			LatLng coordinates = store.getCoordinates(item);
+			if( coordinates != null) {
+				updateLocationIcon(view, item);
+			}
+
 			genQRCode(item.getUrl());
 		}
 	};
 
+	protected void updateLocationIcon(View view, TW319StoreItem item) {
+		ImageView imageViewLocationGreen = (ImageView) view.findViewById(R.id.imageViewLocationGreen);
+		int imageLocationVisible = store.isCoordinatesAvailable(item) ? View.VISIBLE : View.GONE;
+		imageViewLocationGreen.setVisibility(imageLocationVisible);
+	}
 	protected void genQRCode(String url) {
 		WindowManager manager = (WindowManager) getSystemService(WINDOW_SERVICE);
 		Display display = manager.getDefaultDisplay();

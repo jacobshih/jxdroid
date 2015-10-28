@@ -30,6 +30,9 @@ public class K {
 	public final static String jsonTelephone = "telephone";
 	public final static String jsonAddress = "address";
 	public final static String jsonItems = "items";
+	public final static String jsonCoordinates = "coordinates";
+	public final static String jsonLatitude = "latitude";
+	public final static String jsonLongitude = "longitude";
 
 	public final static int timeoutTcpConnection = 3000;
 	public final static int timeoutSocket = 8000;

@@ -36,6 +36,8 @@ public class TW319Location implements Serializable {
 	protected final static String PATH_USER = "user/";
 	protected final static String PATH_COUNTIES = "counties/";
 	protected final static String PATH_VILLAGES = "villages/";
+	protected final static String PATH_STORES = "stores/";
+	protected final static String FILE_STORES = "stores.json";
 	protected final static String FILE_TOKEN = "token.json";
 	protected final static String FILE_CHECKIN = "checkin.json";
 	protected final static String FILE_EXTENSION = ".json";
@@ -47,7 +49,6 @@ public class TW319Location implements Serializable {
 	public TW319Location() {
 		super();
 		items = new ArrayList<TW319LocationItem>();
-		visitedStores = new HashSet<String>();
 	}
 
 	public static String getUrlBase() {
@@ -123,6 +124,10 @@ public class TW319Location implements Serializable {
 
 	public static String getPathVillages() {
 		return getPathTW319QRC() + PATH_DATA + PATH_VILLAGES;
+	}
+
+	public static String getPathStores() {
+		return getPathTW319QRC() + PATH_DATA + PATH_STORES;
 	}
 
 	public String getId() {
@@ -209,10 +214,11 @@ public class TW319Location implements Serializable {
 	}
 
 	public static boolean isStoreVisited(String id) {
-		return visitedStores.contains(id);
+		return (visitedStores != null) ? visitedStores.contains(id) : false;
 	}
 
 	public static void loadVisitedStoresFromFile() {
+		visitedStores = new HashSet<String>();
 		/*
 		 * sample content of checkin.json
          * {

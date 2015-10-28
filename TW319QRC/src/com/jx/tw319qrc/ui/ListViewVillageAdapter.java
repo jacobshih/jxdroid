@@ -76,6 +76,9 @@ public class ListViewVillageAdapter extends BaseAdapter {
 		int imageVisible = visited ? View.VISIBLE : View.GONE;
 		imageViewStoreVisited.setVisibility(imageVisible);
 
+		TW319QRCVillageActivity villageActivity = (TW319QRCVillageActivity) mContext;
+		villageActivity.updateLocationIcon(view, item);
+
 		if (mOnClickListener != null)
 			view.setOnClickListener(mOnClickListener);
 		return view;

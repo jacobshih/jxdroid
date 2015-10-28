@@ -5,6 +5,8 @@ import java.io.Serializable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 import com.jx.tw319qrc.K;
 import com.jx.tw319qrc.R;
 
@@ -14,10 +16,19 @@ public class TW319StoreItem extends TW319LocationItem implements Serializable {
 	 * serialVersionUID is generated automatically.
 	 */
 	private static final long serialVersionUID = -2757654219080840874L;
+	public class LatLng {
+		public LatLng(double latitude, double longitude) {
+			this.latitude = latitude;
+			this.longitude = longitude;
+		}
+		public double latitude;
+		public double longitude;
+	}
 	private String category = null;
 	private String icon = null;
 	private String telephone = null;
 	private String address = null;
+	private LatLng coordinates = null;
 
 	public TW319StoreItem(TW319Location container) {
 		super(container);
@@ -70,6 +81,19 @@ public class TW319StoreItem extends TW319LocationItem implements Serializable {
 		this.address = address;
 	}
 
+	public LatLng getCoordinates() {
+		return coordinates;
+	}
+
+	public void setCoordinates(double latitude, double longitude) {
+		if (this.coordinates == null) {
+			this.coordinates = new LatLng(latitude, longitude);
+		} else {
+			this.coordinates.latitude = latitude;
+			this.coordinates.longitude = longitude;
+		}
+	}
+
 	public void fromJson(JSONObject jsonObject) {
 		id = jsonObject.optString(K.jsonId, "");
 		name = jsonObject.optString(K.jsonName, "");
@@ -78,6 +102,12 @@ public class TW319StoreItem extends TW319LocationItem implements Serializable {
 		icon = jsonObject.optString(K.jsonIcon, "");
 		telephone = jsonObject.optString(K.jsonTelephone, "");
 		address = jsonObject.optString(K.jsonAddress, "");
+		if(jsonObject.has(K.jsonCoordinates)) {
+			JSONObject joCoordinates = jsonObject.optJSONObject(K.jsonCoordinates);
+			double latitude = joCoordinates.optDouble(K.jsonLatitude, 0);
+			double longitude = joCoordinates.optDouble(K.jsonLongitude, 0);
+			setCoordinates(latitude, longitude);
+		}
 	}
 
 	public JSONObject toJson() {
@@ -90,6 +120,13 @@ public class TW319StoreItem extends TW319LocationItem implements Serializable {
 			jsonObject.put(K.jsonIcon, icon);
 			jsonObject.put(K.jsonTelephone, telephone);
 			jsonObject.put(K.jsonAddress, address);
+			if(coordinates != null) {
+				JSONObject joCoordinates = new JSONObject();
+				joCoordinates.put(K.jsonLatitude, coordinates.latitude);
+				joCoordinates.put(K.jsonLongitude, coordinates.longitude);
+				jsonObject.put(K.jsonCoordinates, joCoordinates);
+			}
+			Log.i("jacob_shih", "TW319StoreItem.toJson(): "+jsonObject.toString());
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
