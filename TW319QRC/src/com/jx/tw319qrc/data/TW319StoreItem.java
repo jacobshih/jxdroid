@@ -5,8 +5,6 @@ import java.io.Serializable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
 import com.jx.tw319qrc.K;
 import com.jx.tw319qrc.R;
 
@@ -126,7 +124,6 @@ public class TW319StoreItem extends TW319LocationItem implements Serializable {
 				joCoordinates.put(K.jsonLongitude, coordinates.longitude);
 				jsonObject.put(K.jsonCoordinates, joCoordinates);
 			}
-			Log.i("jacob_shih", "TW319StoreItem.toJson(): "+jsonObject.toString());
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

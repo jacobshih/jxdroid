@@ -14,8 +14,6 @@ import org.jsoup.select.Elements;
 import com.jx.tw319qrc.K;
 import com.jx.tw319qrc.data.TW319StoreItem.LatLng;
 
-import android.util.Log;
-
 public class TW319Store extends TW319Location implements Serializable {
 
 	/**
@@ -34,7 +32,6 @@ public class TW319Store extends TW319Location implements Serializable {
 		if (isFileExist()) {
 			getStoresFromFile();
 		}
-		Log.i("jacob_shih", ""+dictStores.toString());
 	}
 
 	private void validatePathStores() {
@@ -93,7 +90,6 @@ public class TW319Store extends TW319Location implements Serializable {
 							    item.setCoordinates(latitude, longitude);
 							    dictStores.put(item.getId(), item.toJson());
 							    saveAllStores();
-							    Log.i("jacob_shih", "### "+dictStores.toString());
 							}
 						}
 					}
@@ -113,9 +109,7 @@ public class TW319Store extends TW319Location implements Serializable {
 	}
 
 	public LatLng getCoordinates(TW319StoreItem item) {
-		Log.i("jacob_shih", ""+item.getId()+" "+item.getCategory()+" "+item.getTelephone()+" "+item.getIcon()+" "+item.getName()+" "+item.getAddress());
 		if(!isCoordinatesAvailable(item)) {
-			Log.i("jacob_shih", ">>> getStoreOnLine: "+item.getId());
 			getStoreOnLine(item);
 		} else {
 			JSONObject joStore = dictStores.optJSONObject(item.getId());
