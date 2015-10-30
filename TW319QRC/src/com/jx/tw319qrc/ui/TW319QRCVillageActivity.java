@@ -1,11 +1,17 @@
 package com.jx.tw319qrc.ui;
 
 import java.util.EnumMap;
+import java.util.Locale;
 import java.util.Map;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -34,7 +40,7 @@ import com.jx.tw319qrc.data.TW319StoreItem;
 import com.jx.tw319qrc.data.TW319StoreItem.LatLng;
 import com.jx.tw319qrc.data.TW319Village;
 
-public class TW319QRCVillageActivity extends Activity {
+public class TW319QRCVillageActivity extends Activity implements LocationListener {
 
 	private Context mContext = null;
 	private SwipeRefreshLayout swipeRefreshLayout =null;
@@ -46,8 +52,11 @@ public class TW319QRCVillageActivity extends Activity {
 	private TextView textViewStoreName = null;
 	private TextView textViewStoreAddress = null;
 	private TextView textViewStoreTelphone = null;
+	private TextView textViewDistance = null;
 	private TW319Village village = null;
 	protected TW319Store store = null;
+	private LocationManager locationManager = null;
+	private Location location = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +129,8 @@ public class TW319QRCVillageActivity extends Activity {
 				.findViewById(R.id.textViewStoreAddress);
 		textViewStoreTelphone = (TextView) layoutStoreDescription
 				.findViewById(R.id.textViewStoreTelphone);
+		textViewDistance = (TextView) layoutStoreDescription
+				.findViewById(R.id.textViewDistance);
 
 		village = (TW319Village) getIntent().getSerializableExtra(
 				TW319Village.class.getName());
@@ -130,7 +141,6 @@ public class TW319QRCVillageActivity extends Activity {
 		swipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
 			@Override
 			public void onRefresh() {
-				Log.i("jacob_shih", "TW319QRCVillageActivity.initialize().new OnRefreshListener() {...}.onRefresh()");
 				village.reload();
 				loadListViewStores();
 				swipeRefreshLayout.setRefreshing(false);
@@ -142,6 +152,12 @@ public class TW319QRCVillageActivity extends Activity {
 				android.R.color.holo_green_light,
 				android.R.color.holo_orange_light);
 
+		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+		location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		if(location == null) {
+			location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		}
 	}
 
 	private void loadListViewStores() {
@@ -166,21 +182,42 @@ public class TW319QRCVillageActivity extends Activity {
 
 			textViewStoreName.setSelected(true);
 			textViewStoreAddress.setSelected(true);
-			view.setSelected(true);
-
 			LatLng coordinates = store.getCoordinates(item);
-			if( coordinates != null) {
+			String distance = "? ";
+			if (coordinates != null) {
 				updateLocationIcon(view, item);
+				if (location != null) {
+					float results[] = new float[1];
+					Location.distanceBetween(coordinates.latitude, coordinates.longitude, location.getLatitude(), location.getLongitude(), results);
+					distance = String.format(Locale.getDefault(), "%.1f km ", results[0] / 1000);
+					textViewDistance.setText(distance);
+				}
 			}
+
+			view.setSelected(true);
 
 			genQRCode(item.getUrl());
 		}
 	};
 
 	protected void updateLocationIcon(View view, TW319StoreItem item) {
-		ImageView imageViewLocationGreen = (ImageView) view.findViewById(R.id.imageViewLocationGreen);
-		int imageLocationVisible = store.isCoordinatesAvailable(item) ? View.VISIBLE : View.GONE;
-		imageViewLocationGreen.setVisibility(imageLocationVisible);
+		ImageView imageViewLocation = (ImageView) view.findViewById(R.id.imageViewLocation);
+		int imageViewLocationVisibility = View.GONE;
+		if (store.isCoordinatesAvailable(item)) {
+			LatLng coordinates = store.getCoordinates(item);
+			if (coordinates != null) {
+				imageViewLocationVisibility = View.VISIBLE;
+				if (location != null) {
+					float results[] = new float[1];
+					Location.distanceBetween(coordinates.latitude, coordinates.longitude, location.getLatitude(), location.getLongitude(), results);
+					boolean isNear = (results[0] < 10000.0);
+					int id = isNear ? R.drawable.icon_location_near : R.drawable.icon_location_far;
+					Drawable drawable = getResources().getDrawable(id);
+					imageViewLocation.setImageDrawable(drawable);
+				}
+			}
+		}
+		imageViewLocation.setVisibility(imageViewLocationVisibility);			
 	}
 	protected void genQRCode(String url) {
 		WindowManager manager = (WindowManager) getSystemService(WINDOW_SERVICE);
@@ -253,5 +290,25 @@ public class TW319QRCVillageActivity extends Activity {
 	private void showAbout() {
 		AboutDialog about = new AboutDialog(mContext);
 		about.show();
+	}
+
+	@Override
+	public void onLocationChanged(Location l) {
+		location = l;
+	}
+
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+		Log.i("jacob_shih", "" + "status:" + status);
+	}
+
+	@Override
+	public void onProviderEnabled(String provider) {
+		Log.i("jacob_shih", "onProviderEnabled");
+	}
+
+	@Override
+	public void onProviderDisabled(String provider) {
+		Log.i("jacob_shih", "onProviderDisabled");
 	}
 }

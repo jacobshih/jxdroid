@@ -17,7 +17,7 @@
     </TextView>
 
     <ImageView
-        android1:id="@+id/imageViewLocationGreen"
+        android1:id="@+id/imageViewLocation"
         android1:layout_width="wrap_content"
         android1:layout_height="wrap_content"
         android1:layout_gravity="bottom|right"

@@ -61,7 +61,7 @@ public class GridViewLocationAdapter extends BaseAdapter {
 		TextView textView = (TextView) view.findViewById(R.id.textViewLocation);
 		textView.setText(item.getName());
 		textView.setBackgroundResource(mResIdOfItemBackground);
-		ImageView imageViewLocationGreen = (ImageView) view.findViewById(R.id.imageViewLocationGreen);
+		ImageView imageViewLocationGreen = (ImageView) view.findViewById(R.id.imageViewLocation);
 		int imageVisible = item.isDataCached() ? View.VISIBLE : View.GONE;
 		imageViewLocationGreen.setVisibility(imageVisible);
 
