@@ -54,7 +54,7 @@ public class TW319QRCVillageActivity extends Activity implements LocationListene
 	private TextView textViewStoreTelphone = null;
 	private TextView textViewDistance = null;
 	private TW319Village village = null;
-	protected TW319Store store = null;
+	protected static TW319Store store = null;
 	private LocationManager locationManager = null;
 	private Location location = null;
 
@@ -135,7 +135,9 @@ public class TW319QRCVillageActivity extends Activity implements LocationListene
 		village = (TW319Village) getIntent().getSerializableExtra(
 				TW319Village.class.getName());
 
-		store = new TW319Store();
+		if(store ==null) {
+			store = new TW319Store();
+		}
 
 		swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.layoutTW319QRC);
 		swipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
