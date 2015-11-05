@@ -22,15 +22,14 @@
         android:id="@+id/textViewAddress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textViewName"
-        android:layout_below="@id/textViewName"
-        android:layout_toRightOf="@id/imageViewIcon"
+        android:layout_below="@+id/textViewName"
+        android:layout_toRightOf="@+id/textViewStoreId"
         android:ellipsize="marquee"
         android:marqueeRepeatLimit="marquee_forever"
         android:maxLines="1"
         android:singleLine="true"
         android:text="@string/app_name"
-        android:textSize="18sp" />
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/textViewName"
@@ -62,5 +61,17 @@
         android:layout_alignLeft="@+id/imageViewIcon"
         android:contentDescription="@string/text_default_content_description"
         android:src="@drawable/icon_location_near" />
+
+    <TextView
+        android:id="@+id/textViewStoreId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/textViewAddress"
+        android:layout_alignLeft="@id/textViewName"
+        android:layout_below="@id/textViewName"
+        android:layout_marginRight="3dp"
+        android:layout_toRightOf="@id/imageViewIcon"
+        android:text="@string/app_name"
+        android:textSize="12sp" />
 
 </RelativeLayout>

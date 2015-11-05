@@ -65,6 +65,8 @@ public class ListViewVillageAdapter extends BaseAdapter {
 		TextView textViewAddress = (TextView) view
 				.findViewById(R.id.textViewAddress);
 		textViewAddress.setText(item.getAddress());
+		TextView textViewStoreId = (TextView) view.findViewById(R.id.textViewStoreId);
+		textViewStoreId.setText(item.getId());
 		ImageView imageViewIcon = (ImageView) view
 				.findViewById(R.id.imageViewIcon);
 		Bitmap bm = BitmapFactory.decodeResource(mContext.getResources(),
