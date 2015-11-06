@@ -270,6 +270,27 @@ public class TW319Location implements Serializable {
          *   http://www.319.com.tw/cwApp/checkin/list/bycategory?token=yourtoken
          *   http://www.319.com.tw/cwApp/checkin/list/bycounty?token=yourtoken
          */
+		String token = getUserToken();
+		if(token != null) {
+			try {
+				String urlCheckinByCounty = getUrlCheckinByCounty();
+				urlCheckinByCounty = String.format("%s?token=%s", urlCheckinByCounty, token);
+				String jsCheckin = new TW319HttpTask().execute(urlCheckinByCounty).get(
+						K.timeoutHttpRequest, TimeUnit.MILLISECONDS);
+				if (jsCheckin.length() > 0) {
+					OutputStream os = new FileOutputStream(getPathCheckin());
+					if (os != null) {
+						os.write(jsCheckin.getBytes());
+						os.close();
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static String getUserToken() {
 		/*
 		 * sample content of token.json
 		 * {
@@ -278,8 +299,8 @@ public class TW319Location implements Serializable {
 		 * } 
 		 */
 		File fileToken = new File(getPathToken());
+		String token = null;
 		if(fileToken.isFile()) {
-			String token = null;
 			String jsToken = loadFromFile(fileToken.getPath());
 			try {
 				JSONObject joToken = new JSONObject(jsToken);
@@ -287,24 +308,8 @@ public class TW319Location implements Serializable {
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-			if(token != null) {
-				try {
-					String urlCheckinByCounty = getUrlCheckinByCounty();
-					urlCheckinByCounty = String.format("%s?token=%s", urlCheckinByCounty, token);
-					String jsCheckin = new TW319HttpTask().execute(urlCheckinByCounty).get(
-							K.timeoutHttpRequest, TimeUnit.MILLISECONDS);
-					if (jsCheckin.length() > 0) {
-						OutputStream os = new FileOutputStream(getPathCheckin());
-						if (os != null) {
-							os.write(jsCheckin.getBytes());
-							os.close();
-						}
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
 		}
+		return token;
 	}
 
 	public void fromJsonString(String jsonString) {
