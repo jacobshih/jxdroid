@@ -260,6 +260,8 @@ public class TW319QRCActivity extends Activity {
 						// not used so far...
 					} else if (tagName.equals(K.tagPathCheckinByCounty)) {
 						TW319Location.setUrlCheckinByCounty(text);
+					} else if (tagName.equals(K.tagPathQRCodeCheckin)) {
+						TW319Location.setUrlQRCodeCheckin(text);
 					}
 					break;
 				case XmlPullParser.TEXT:

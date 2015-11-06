@@ -34,6 +34,7 @@ public class TW319Location implements Serializable {
 	private static String urlPrefixOfStoreCode = null;
 	private static String urlPrefixOfStoreDetail = null;
 	private static String urlCheckinByCounty = null;
+	private static String urlQRCodeCheckin = null;
 	private static String pathTW319QRC = null;
 	protected final static String PATH_DATA = "data/";
 	protected final static String PATH_USER = "user/";
@@ -100,6 +101,14 @@ public class TW319Location implements Serializable {
 
 	public static void setUrlCheckinByCounty(String urlPath) {
 		urlCheckinByCounty = urlBase + urlPath;
+	}
+
+	public static String getUrlQRCodeCheckin() {
+		return urlQRCodeCheckin;
+	}
+
+	public static void setUrlQRCodeCheckin(String urlPath) {
+		urlQRCodeCheckin = urlBase + urlPath;
 	}
 
 	public static String getPathTW319QRC() {

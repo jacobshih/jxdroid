@@ -1,8 +1,16 @@
 package com.jx.tw319qrc.ui;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,6 +20,8 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
+import android.net.Uri.Builder;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -20,20 +30,25 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
+import com.jx.tw319qrc.K;
 import com.jx.tw319qrc.R;
+import com.jx.tw319qrc.data.TW319HttpTask;
 import com.jx.tw319qrc.data.TW319Location;
 import com.jx.tw319qrc.data.TW319Store;
 import com.jx.tw319qrc.data.TW319StoreItem;
@@ -54,6 +69,7 @@ public class TW319QRCVillageActivity extends Activity implements LocationListene
 	private TextView textViewStoreTelphone = null;
 	private TextView textViewDistance = null;
 	private TW319Village village = null;
+	private TW319StoreItem storeItem = null;
 	protected static TW319Store store = null;
 	private LocationManager locationManager = null;
 	private Location location = null;
@@ -160,6 +176,21 @@ public class TW319QRCVillageActivity extends Activity implements LocationListene
 		if(location == null) {
 			location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 		}
+
+		imageViewQRCode.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				checkin();		// check-in using current location.
+				return v.performClick();
+			}
+		});
+		imageViewStoreIcon.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				checkin(false);	// (cheating) check-in using the location of the store.
+				return v.performClick();
+			}
+		});
 	}
 
 	private void loadListViewStores() {
@@ -175,6 +206,7 @@ public class TW319QRCVillageActivity extends Activity implements LocationListene
 				long id) {
 			layoutStoreDetail.setVisibility(View.VISIBLE);
 			TW319StoreItem item = (TW319StoreItem) view.getTag();
+			storeItem = item;
 			Bitmap bm = BitmapFactory.decodeResource(mContext.getResources(),
 					item.getIconId());
 			imageViewStoreIcon.setImageBitmap(bm);
@@ -312,5 +344,89 @@ public class TW319QRCVillageActivity extends Activity implements LocationListene
 	@Override
 	public void onProviderDisabled(String provider) {
 		Log.i("jacob_shih", "onProviderDisabled");
+	}
+
+	private String md5(String s) {
+		MessageDigest digest;
+		String hash = "";
+		try {
+			digest = java.security.MessageDigest.getInstance("MD5");
+			digest.update(s.getBytes());
+			byte messageDigest[] = digest.digest();
+			StringBuffer hexString = new StringBuffer();
+			for(int i = 0; i < messageDigest.length; i++) {
+				hexString.append(String.format("%02x", messageDigest[i]));
+			}
+			hash = hexString.toString();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return hash;
+	}
+	private String getVerifyCode(String token, String storeid, String gps_location) {
+		String verifyCode = null;
+		String code = String.format(Locale.getDefault(), "%s%s%s:319", token, storeid, gps_location);
+		verifyCode = md5(code);
+		return verifyCode;
+	}
+
+	private void checkin() {
+		checkin(true);
+	}
+
+	private void checkin(boolean useCurrentLocation) {
+		String token = TW319Location.getUserToken();
+		if(token == null) {
+			return;
+		}
+
+		double lat = 0;
+		double lng = 0;
+		if(useCurrentLocation) {
+			lat = location.getLatitude();
+			lng = location.getLongitude();
+		} else {
+			LatLng latlng = store.getCoordinates(storeItem);
+			lat = latlng.latitude;
+			lng = latlng.longitude;
+		}
+		String store_id = storeItem.getId();
+		String gps_location = String.format(Locale.getDefault(), "%f,%f", lat, lng);
+		String verifycode = getVerifyCode(token, store_id, gps_location);
+		String urlCheckin = TW319Location.getUrlQRCodeCheckin();
+		Builder builder = Uri.parse(urlCheckin).buildUpon();
+		builder.appendQueryParameter("token", token);
+		builder.appendQueryParameter("verifycode", verifycode);
+		builder.appendQueryParameter("store_id", store_id);
+		builder.appendQueryParameter("gps_location", gps_location);
+		urlCheckin = builder.build().toString();
+		try {
+			String jsCheckin = new TW319HttpTask().execute(urlCheckin).get(
+					K.timeoutHttpRequest, TimeUnit.MILLISECONDS);
+			JSONObject joCheckin = new JSONObject(jsCheckin);
+			String status = joCheckin.optString(K.jsonStatus, "");
+			if(status.equals("0")) {
+				String statusMsg = joCheckin.optString(K.jsonStatusMsg, "");
+				Toast.makeText(this, statusMsg, Toast.LENGTH_SHORT).show();
+			} else {
+				String statusMsg = String.format(Locale.getDefault(),
+					"%s %s %s\n%s %s\n%s",
+					joCheckin.optString(K.jsonCountyName, ""),
+					joCheckin.optString(K.jsonVillageName, ""),
+					joCheckin.optString(K.jsonAddress, ""),
+					joCheckin.optString(K.jsonStoreId, ""),
+					joCheckin.optString(K.jsonStoreName, ""),
+					joCheckin.optString(K.jsonTimeCollected, ""));
+				Toast.makeText(this, statusMsg, Toast.LENGTH_LONG).show();
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		} catch (TimeoutException e) {
+			e.printStackTrace();
+		}
 	}
 }

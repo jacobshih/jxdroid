@@ -49,6 +49,9 @@
         <path_checkin_bycounty>
         /cwApp/checkin/list/bycounty
         </path_checkin_bycounty>
+        <path_qrcode_checkin>
+        /cwApp/qrcode/checkin
+        </path_qrcode_checkin>
     </cwApp>
 </tw319qrc>
 
