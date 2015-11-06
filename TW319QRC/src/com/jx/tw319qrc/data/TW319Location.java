@@ -18,6 +18,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.net.Uri;
+import android.net.Uri.Builder;
+
 import com.jx.tw319qrc.K;
 
 public class TW319Location implements Serializable {
@@ -274,7 +277,9 @@ public class TW319Location implements Serializable {
 		if(token != null) {
 			try {
 				String urlCheckinByCounty = getUrlCheckinByCounty();
-				urlCheckinByCounty = String.format("%s?token=%s", urlCheckinByCounty, token);
+				Builder builder = Uri.parse(getUrlCheckinByCounty()).buildUpon();
+				builder.appendQueryParameter("token", token);
+				urlCheckinByCounty = builder.build().toString();
 				String jsCheckin = new TW319HttpTask().execute(urlCheckinByCounty).get(
 						K.timeoutHttpRequest, TimeUnit.MILLISECONDS);
 				if (jsCheckin.length() > 0) {
