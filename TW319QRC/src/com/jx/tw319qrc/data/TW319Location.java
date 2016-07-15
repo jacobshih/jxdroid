@@ -20,7 +20,6 @@ import org.json.JSONObject;
 
 import android.net.Uri;
 import android.net.Uri.Builder;
-
 import com.jx.tw319qrc.K;
 
 public class TW319Location implements Serializable {
@@ -34,6 +33,7 @@ public class TW319Location implements Serializable {
 	private static String urlPrefixOfStoreCode = null;
 	private static String urlPrefixOfStoreDetail = null;
 	private static String urlCheckinByCounty = null;
+	private static String urlCheckinByCategory = null;
 	private static String urlQRCodeCheckin = null;
 	private static String pathTW319QRC = null;
 	protected final static String PATH_DATA = "data/";
@@ -101,6 +101,14 @@ public class TW319Location implements Serializable {
 
 	public static void setUrlCheckinByCounty(String urlPath) {
 		urlCheckinByCounty = urlBase + urlPath;
+	}
+
+	public static String getUrlCheckinByCategory() {
+		return urlCheckinByCategory;
+	}
+
+	public static void setUrlCheckinByCategory(String urlPath) {
+		urlCheckinByCategory = urlBase + urlPath;
 	}
 
 	public static String getUrlQRCodeCheckin() {
@@ -260,10 +268,10 @@ public class TW319Location implements Serializable {
 		String jsCheckin = loadFromFile(getPathCheckin());
 		try {
 			JSONObject joCheckin = new JSONObject(jsCheckin);
-			JSONArray joStoresVisitedByDistrict = joCheckin.optJSONArray(K.jsonStoresVisitedByDistrict);
-			for (int i = 0; i < joStoresVisitedByDistrict.length(); i++) {
-				JSONObject joDistrict = joStoresVisitedByDistrict.getJSONObject(i);
-				JSONArray joStores = joDistrict.optJSONArray(K.jsonStores);
+			JSONArray joStoresVisitedByCategory = joCheckin.optJSONArray(K.jsonStoresVisitedByCategory);
+			for (int i = 0; i < joStoresVisitedByCategory.length(); i++) {
+				JSONObject joCategory = joStoresVisitedByCategory.getJSONObject(i);
+				JSONArray joStores = joCategory.optJSONArray(K.jsonStores);
 				for (int j = 0; j < joStores.length(); j++) {
 					JSONObject joStore = joStores.getJSONObject(j);
 					String store_id = joStore.optString(K.jsonStoreId);
@@ -285,11 +293,11 @@ public class TW319Location implements Serializable {
 		String token = getUserToken();
 		if(token != null) {
 			try {
-				String urlCheckinByCounty = getUrlCheckinByCounty();
-				Builder builder = Uri.parse(getUrlCheckinByCounty()).buildUpon();
+				String urlCheckinByCategory = getUrlCheckinByCategory();
+				Builder builder = Uri.parse(getUrlCheckinByCategory()).buildUpon();
 				builder.appendQueryParameter("token", token);
-				urlCheckinByCounty = builder.build().toString();
-				String jsCheckin = new TW319HttpTask().execute(urlCheckinByCounty).get(
+				urlCheckinByCategory = builder.build().toString();
+				String jsCheckin = new TW319HttpTask().execute(urlCheckinByCategory).get(
 						K.timeoutHttpRequest, TimeUnit.MILLISECONDS);
 				if (jsCheckin.length() > 0) {
 					OutputStream os = new FileOutputStream(getPathCheckin());

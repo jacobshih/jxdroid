@@ -257,7 +257,7 @@ public class TW319QRCActivity extends Activity {
 					} else if (tagName.equals(K.tagPathCheckinByTime)) {
 						// not used so far...
 					} else if (tagName.equals(K.tagPathCheckinByCategory)) {
-						// not used so far...
+						TW319Location.setUrlCheckinByCategory(text);
 					} else if (tagName.equals(K.tagPathCheckinByCounty)) {
 						TW319Location.setUrlCheckinByCounty(text);
 					} else if (tagName.equals(K.tagPathQRCodeCheckin)) {

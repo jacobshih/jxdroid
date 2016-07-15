@@ -19,6 +19,7 @@ public class K {
 	public final static String jsonUserEmail = "email";
 	public final static String jsonUserToken = "token";
 	public final static String jsonStoresVisitedByDistrict = "stores_visited_by_district";
+	public final static String jsonStoresVisitedByCategory = "stores_visited_by_category";
 	public final static String jsonStores = "stores";
 	public final static String jsonCountyId = "county_id";
 	public final static String jsonCountyName = "county_name";
